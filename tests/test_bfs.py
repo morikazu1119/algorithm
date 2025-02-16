@@ -9,5 +9,5 @@ def test_bfs():
         'E': {'B', 'F'},
         'F': {'C', 'E'}
     }
-    result = sorted(bfs(graph, 'A'))
+    result = bfs(graph, 'A')
     assert result == ['A', 'B', 'C', 'D', 'E', 'F']
