@@ -1,0 +1,43 @@
+FROM nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
+
+ENV TZ=Asia/Tokyo
+
+RUN apt update && \
+    apt install -y \
+        sudo \
+        git \
+        python3 \
+        python3-pip \
+        python3-venv \
+        nano \
+    && \
+    pip install --upgrade pip && \
+    apt autoremove -y && \
+    apt clean
+
+# 作業ディレクトリの作成、アプリケーションコードをコピー
+WORKDIR /app
+COPY  . /app
+
+RUN python3 -m venv /app/.venv
+
+# 仮想環境をアクティベートするコマンドを.bashrcに追加
+RUN echo "source /app/.venv/bin/activate" >> /root/.bashrc
+
+# JupyterLab,HuggingFaceHub,WandBのインストール
+RUN /app/.venv/bin/pip install Jupyter \
+    jupyterlab \
+    huggingface_hub[cli] \
+    wandb
+
+# PyTorch,Tritonのインストール
+RUN /app/.venv/bin/pip install torch==2.2.0 torchvision==0.17.0 torchaudio==2.2.0 triton --index-url https://download.pytorch.org/whl/cu121
+
+# Wheelのインストール
+RUN /app/.venv/bin/pip install wheel
+
+#Unslothをインストール 
+RUN /app/.venv/bin/pip install "unsloth[cu121-ampere-torch220] @ git+https://github.com/unslothai/unsloth.git"
+
+# コンテナの起動時にbashを実行
+CMD ["/bin/bash"]
