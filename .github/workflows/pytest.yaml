@@ -22,5 +22,5 @@ jobs:
         pip install pytest
 
     - name: Run tests from test directory with pytest
-      # run: |
-      #   python test/test_run_estimate.py
+      run: |
+        pytest -s test/
